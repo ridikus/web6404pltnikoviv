@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Форма отправки данных</title>
+    <link rel="stylesheet" href="style_request.css">
+</head>
+<body>
+<ul class="nav">
+    <li><a href="my_website.html">Главная</a></li>
+    <li><a href="About_tanks.html">Самые известные танки</a></li>
+    <li><a href="Technical_params.html">Технические характеристики</a></li>
+    <li><a href="post_reqest.html">Обратная связь</a></li>
+</ul>
+
+<h1>Форма для ввода данных</h1>
+
+<!-- Поле для имени -->
+<label for="name">Имя:</label><br>
+<input type="text" id="name" name="name"><br><br>
+
+<!-- Поле для возраста -->
+<label for="age">Возраст:</label><br>
+<input type="number" id="age" name="age"><br><br>
+
+<!-- Поле для email -->
+<label for="email">Email:</label><br>
+<input type="email" id="email" name="email"><br><br>
+
+<!-- Поле для добавления танка -->
+<label for="tank">Какой танк вы хотите добавить?</label><br>
+<input type="text" id="tank" name="tank"><br><br>
+
+<!-- Кнопка отправки формы -->
+<button id="submitButton">Отправить</button>
+
+<!-- Элемент для вывода ошибок -->
+<p class="error" id="errorMessage"></p>
+
+<!-- Элемент для подтверждения отправки -->
+<p id="successMessage" style="color: green;"></p>
+
+<script>
+    document.getElementById("submitButton").addEventListener("click", async function () {
+        // Получаем значения полей
+        const name = document.getElementById("name").value.trim();
+        const age = document.getElementById("age").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const tank = document.getElementById("tank").value.trim();
+        const errorMessage = document.getElementById("errorMessage");
+        const successMessage = document.getElementById("successMessage");
+
+        // Очищаем предыдущие сообщения
+        errorMessage.textContent = "";
+        successMessage.textContent = "";
+
+        // Проверка имени
+        if (!name) {
+            errorMessage.textContent = "Пожалуйста, введите ваше имя.";
+            return;
+        }
+
+        // Проверка возраста
+        const maxAge = 120;
+        if (!age || isNaN(age) || parseInt(age) <= 0 || parseInt(age) > maxAge) {
+            errorMessage.textContent = `Возраст должен быть числом от 1 до ${maxAge}.`;
+            return;
+        }
+
+        // Проверка email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+            errorMessage.textContent = "Пожалуйста, введите корректный email.";
+            return;
+        }
+
+        // Проверка поля "Какой танк вы хотите добавить?"
+        if (!tank) {
+            errorMessage.textContent = "Пожалуйста, введите название танка.";
+            return;
+        }
+
+        // Формируем данные для отправки
+        const postData = {
+            name: name,
+            age: parseInt(age),
+            email: email,
+            tank: tank
+        };
+
+        // Отправляем POST-запрос
+        try {
+            const response = await fetch("http://localhost:8000/home", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(postData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+            }
+
+            const responseData = await response.json();
+            successMessage.textContent = `Данные успешно отправлены!`;
+        } catch (error) {
+            errorMessage.textContent = `Не удалось отправить данные: ${error.message}`;
+        }
+    });
+</script>
+</body>
+</html>
