@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Функция для получения данных с сервера
     async function fetchTankData() {
         try {
-            const response = await fetch("http://localhost:3000/home");
+            const response = await fetch("http://localhost:8000/home");
             if (!response.ok) {
                 throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
             }
